@@ -56,25 +56,27 @@ HAProxy прокcирует (балансирует) подключения к �
 ### Дополнительно
 В файле `PSQL_cfg.txt` - сведения по настройки multi-master репликации PostgrsSQL-BDR.
 
-### UML-схема проекта
+### Cхема проекта
+![
 ```mermaid
 graph TD
-C[Client]
-C ==> B[Balancer] 
+C\[Client\]
+C ==> B\[Balancer\] 
     subgraph PSQL Cluster
-    P1[PSQL1]
-    P2[PSQL2]
-    Pn[PSQLn]
+    P1\[PSQL1\]
+    P2\[PSQL2\]
+    Pn\[PSQLn\]
     end
 B --> P1
 B --> P2
 B --> Pn
-B --> C0[Consul]
+B --> C0\[Consul\]
     subgraph Healthcheck/DNS
-    R[Registrator] --> C0
+    R\[Registrator\] --> C0
     C0 --> R
     end
 R -.-> P1
 R -.-> P2
 R -.-> Pn
 ```
+](https://raw.githubusercontent.com/esendjer/The-test-item-for-The-Black-Silicon-Dioxide/master/Scheme.png)
