@@ -1,0 +1,66 @@
+###
+### Configuration BDR replication
+###
+
+### Configuration PSQL
+### All nodes
+echo -en listen_addresses = \'*\'\\n\
+	shared_preload_libraries = \'bdr\'\\n\
+	wal_level = \'logical\'\\n\
+	track_commit_timestamp = on\\n\
+	max_connections = 100\\n\
+	max_wal_senders = 10\\n\
+	max_replication_slots = 10\\n\
+	max_worker_processes = 10\\n\
+	track_activities = on\\n\
+	track_activity_query_size = 1024\\n\
+	track_counts = on\\n\
+	track_io_timing = on\\n\
+	track_functions = all\\n >/var/lib/postgresql/data/postgresql.conf
+
+### Allow Replication
+### All nodes
+echo host replication bdrsync all md5>>/var/lib/postgresql/data/pg_hba.conf
+
+### Creating Replication User and DB
+### All nodes
+psql -U postgres -c "CREATE USER bdrsync SUPERUSER PASSWORD 'fieHoov2';" &&\
+	psql -U postgres -c "CREATE DATABASE test_db;" &&\
+	psql -U postgres -c "CREATE ROLE test_db_user WITH SUPERUSER LOGIN PASSWORD 'SuperPass';" &&\
+	psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE test_db TO test_db_user;" &&\
+	psql -U postgres test_db -c "CREATE EXTENSION btree_gist;" &&\
+	psql -U postgres test_db -c "CREATE EXTENSION bdr;"
+
+### Configuration BDR
+### Only one node (master-one)
+### pgtest001
+psql -U postgres test_db -c "SELECT bdr.bdr_group_create(\
+	local_node_name := 'pgtest001', \
+	node_external_dsn := 'host=pgtest001 port=5432 dbname=test_db user=bdrsync password=fieHoov2');"
+
+### Configuration BDR
+### On other nodes (master-twoo & master-three & master-N)
+### pgtest002
+psql -U postgres test_db -c "SELECT bdr.bdr_group_join(\
+	local_node_name := 'pgtest002', \
+	node_external_dsn := 'host=pgtest002 port=5432 dbname=test_db user=bdrsync password=fieHoov2', \
+	join_using_dsn := 'host=pgtest001 port=5432 dbname=test_db user=bdrsync password=fieHoov2');"
+
+### Configuration BDR
+### On other nodes (master-twoo & master-three & master-N)
+### pgtest003
+psql -U postgres test_db -c "SELECT bdr.bdr_group_join(\
+	local_node_name := 'pgtest003', \
+	node_external_dsn := 'host=pgtest003 port=5432 dbname=test_db user=bdrsync password=fieHoov2', \
+	join_using_dsn := 'host=pgtest002 port=5432 dbname=test_db user=bdrsync password=fieHoov2');"
+
+### Creating tets data
+psql -U postgres test_db -c "CREATE TABLE test_tbl (num int, Name varchar(40) NOT NULL, born date, Comment text);"
+psql -U postgres test_db -c "INSERT INTO test_tbl VALUES ('1', 'Maxim', '1999-01-22', 'asian'), \
+	('2', 'Mila', '1999-09-23', 'europian'), \
+	('3', 'Nina', '1999-12-31', 'african');"
+
+### Check tets data
+psql -U postgres test_db -c "SELECT * FROM test_tbl;"
+
+

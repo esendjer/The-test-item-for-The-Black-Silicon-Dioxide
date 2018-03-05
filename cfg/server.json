@@ -1,0 +1,11 @@
+{
+	"client_addr": "0.0.0.0",
+	"data_dir": "/consul/data",
+	"leave_on_terminate": true,
+	"server": true,
+	"bootstrap": true,
+	"dns_config": {
+		"allow_stale": true,
+		"max_stale": "1s"
+	}
+}

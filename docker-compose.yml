@@ -1,0 +1,99 @@
+version: '2'
+
+services:
+    contest01:
+        image: consul
+        ports:
+            - "8500:8500"
+        environment:
+            - 'CONSUL_ALLOW_PRIVILEGED_PORTS='
+        volumes:
+            - ./cfg/server.json:/consul/config/server.json:ro
+        entrypoint:
+            - consul
+            - agent
+            - -config-file=/consul/config/server.json
+            - -client=0.0.0.0
+            - -dns-port=53
+            - -recursor=8.8.8.8
+        networks:
+            connet:
+                ipv4_address: 172.20.0.2
+        restart: always
+    regtest01:
+        image: gliderlabs/registrator
+        depends_on:
+            - contest01
+        networks:
+            connet:
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        command: ["-internal", "consul://172.20.0.2:8500"]
+        restart: always
+    pgtest001:
+        extends:
+            file: ./dev/pg.yml
+            service: pgt
+        environment:
+            - "SERVICE_NAME=psql"
+            - "SERVICE_TAGS=psql001"
+            - "POSTGRES_PASSWORD=ahpeo6quei4zeiGh"
+        depends_on:
+            - regtest01
+        volumes:
+            - ./dat/pgdir001:/var/lib/postgresql/data
+        networks:
+            connet:
+    pgtest002:
+        extends:
+            file: ./dev/pg.yml
+            service: pgt
+        environment:
+            - "SERVICE_NAME=psql"
+            - "SERVICE_TAGS=psql002"
+            - "POSTGRES_PASSWORD=ahpeo6quei4zeiGh"
+        depends_on:
+            - regtest01
+        volumes:
+            - ./dat/pgdir002:/var/lib/postgresql/data
+        networks:
+            connet:
+    pgtest003:
+        extends:
+            file: ./dev/pg.yml
+            service: pgt
+        environment:
+            - "SERVICE_NAME=psql"
+            - "SERVICE_TAGS=psql003"
+            - "POSTGRES_PASSWORD=ahpeo6quei4zeiGh"
+        depends_on:
+            - regtest01
+        volumes:
+            - ./dat/pgdir003:/var/lib/postgresql/data
+        networks:
+            connet:
+    hapoxy001:
+        image: haproxy:alpine
+        depends_on: 
+            - pgtest001
+            - pgtest002
+        environment:
+            - "SERVICE_NAME=proxy"
+            - "SERVICE_TAGS=ha01"
+        volumes:
+            - ./cfg/haproxy.cfg:/haproxy.cfg:ro
+            - ./cfg/resolv.conf:/etc/resolv.conf:ro # Это нужно, так как опция dns обрабатывается не корректно
+        ports:
+            - "15432:15432"
+            - "25432:25432"
+        networks:
+            connet:
+        restart: always
+
+networks:
+    connet:
+        ipam:
+            config:
+                - subnet: 172.20.0.0/24
+                  gateway: 172.20.0.1
+
