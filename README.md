@@ -26,8 +26,8 @@ Consul запущен в качестве службы обнаружения с
 * Настройка согласно: https://www.consul.io/docs/agent/dns.html
 * Запуск согласно: https://docs.docker.com/samples/library/consul/#running-consul-for-development
 
-### Regictrator 
-Regictrator читает из сокета Docker'а информацию о запущенных/остановленных контейнерах и передает информацию в Consul (`consul://172.20.0.2:8500`).
+### Registrator 
+Registrator читает из сокета Docker'а информацию о запущенных/остановленных контейнерах и передает информацию в Consul (`consul://172.20.0.2:8500`).
 Переменные `SERVICE_NAME` и `SERVICE_TAGS` назначаются контейнерам для упрощения идентификации, что также отражается в Consul'е.
 * Настройка и запуск согласно: https://github.com/gliderlabs/registrator
     
