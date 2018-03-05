@@ -1,6 +1,8 @@
 # The-test-item-for-The-Black-Silicon-Dioxide
 The test item for The Black Silicon Dioxide - это пример выполнения тестового задания
 
+## PostgreSQL (multi-master replication) + Balancer (HAProxy) + Consul + Registrator
+
 * Cодержание проекта: 
 
 |Имя директории|Описание директории|
