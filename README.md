@@ -1,6 +1,7 @@
 # The-test-item-for-The-Black-Silicon-Dioxide
 The test item for The Black Silicon Dioxide - это пример выполнения тестового задания
 
+## Docker-compose
 ## PostgreSQL (multi-master replication) + Balancer (HAProxy) + Consul + Registrator
 
 * Cодержание проекта: 
