@@ -10,8 +10,8 @@ The test item for The Black Silicon Dioxide - это пример выполне
 |./dat|директория под данные PostgreSQL|
 
 * Тестировался на:
-	* Docker version 17.12.0-ce, build c97c6d6 + Docker-compose version 1.8.0
-	* Docker version 1.13.1, build 092cba3 + Docker-compose version 1.8.0
+	* `Docker version 17.12.0-ce` + `Docker-compose version 1.8.0`
+	* `Docker version 1.13.1` + `Docker-compose version 1.8.0`
 
 **Примечание:** *Возможно для запуска окружения в вашей среде придется поправить файл `./dev/Dockerfile`, вызвано это разным поведением разных версий Docker (`docker-ce` и `dockre.io`) при обработке параметра FROM.
 Сейчас адаптировано на работу с docker-ce.*
