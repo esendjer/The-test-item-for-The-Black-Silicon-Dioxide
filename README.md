@@ -61,3 +61,25 @@ HAProxy прокcирует (балансирует) подключения к �
 
 ### Cхема проекта
 ![Scheme](https://raw.githubusercontent.com/esendjer/The-test-item-for-The-Black-Silicon-Dioxide/master/Scheme.png)
+
+## UML-схема проекта
+```mermaid
+graph TD
+C[Client]
+C ==> B[Balancer] 
+    subgraph PSQL Cluster
+    P1[PSQL1]
+    P2[PSQL2]
+    Pn[PSQLn]
+    end
+B --> P1
+B --> P2
+B --> Pn
+B --> C0[Consul]
+    subgraph Healthcheck/DNS
+    R[Registrator] --> C0
+    end
+R -.-> P1
+R -.-> P2
+R -.-> Pn
+```
